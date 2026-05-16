@@ -210,16 +210,24 @@
               </div>
               <div class="about-mode">
                 <div class="about-mode__label">Backtest</div>
-                <code class="about-code">uv run python -m src.backtesting --tickers AAPL,MSFT --model deepseek/deepseek-chat --model-provider OpenRouter</code>
+                <code class="about-code">uv run backtester --tickers AAPL,MSFT --model deepseek/deepseek-chat --model-provider OpenRouter</code>
+              </div>
+              <div class="about-mode">
+                <div class="about-mode__label">Risk profile</div>
+                <code class="about-code">uv run backtester --tickers AAPL,MSFT --model deepseek/deepseek-chat --model-provider OpenRouter --risk-profile speculative</code>
               </div>
               <div class="about-mode">
                 <div class="about-mode__label">A/B compare</div>
-                <code class="about-code">uv run python -m src.backtesting compare --mode both --tickers AAPL,MSFT --model deepseek/deepseek-chat --model-provider OpenRouter</code>
+                <code class="about-code">uv run backtester compare --mode both --tickers AAPL,MSFT --model deepseek/deepseek-chat --model-provider OpenRouter</code>
               </div>
             </div>
             <p class="about-note">
               Requires an API key for at least one LLM provider (OpenAI, Anthropic, Groq, …) and
-              a Finnhub key for market data. See the
+              a Finnhub key for market data. The <code>backtester</code> console script is
+              installed by <code>uv sync</code>. <code>--risk-profile</code> accepts
+              <code>conservative</code>, <code>cautious</code>, <code>balanced</code> (default),
+              <code>aggressive</code>, or <code>speculative</code> — each preset bundles
+              position-sizing limits, order-notional caps, and a daily loss limit. See the
               <a href="https://github.com/quorai/quorai" target="_blank" rel="noopener">README</a>
               for full setup instructions.
             </p>
