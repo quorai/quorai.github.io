@@ -1,0 +1,49 @@
+---
+import agentsData from '../data/agents.json';
+
+const { groups } = agentsData;
+---
+<section id="agents">
+  <div class="section-inner">
+    <div class="section-head">
+      <div class="section-num"><span>§ 03</span> &nbsp;Roster</div>
+      <h2>The twenty-five.</h2>
+      <p class="lede">
+        Six groups, organised by school of thought. Each persona has a fixed prompt; the
+        pull-quotes summarise the lens they argue from.
+      </p>
+    </div>
+    <div class="section-body">
+      <div class="groups">
+        {groups.map((group) => {
+          const sortedAgents = [...group.agents].sort((a, b) => a.order - b.order);
+          return (
+            <div class="group" style={`--gc: var(--c-${group.key})`}>
+              <div class="group-head">
+                <div class="group-tag">
+                  <span class="sq"></span>
+                  {group.key.replace(/_/g, ' ')}
+                </div>
+                <h3>{group.display_name}</h3>
+                <div class="group-count">{group.agents.length} agents</div>
+              </div>
+              <p class="group-desc">{group.description}</p>
+              <div class="agent-grid">
+                {sortedAgents.map((agent) => (
+                  <div class="agent">
+                    <div class="agent-initials">{agent.initials}</div>
+                    <div>
+                      <div class="agent-name">{agent.display_name}</div>
+                      <div class="agent-role">{agent.description}</div>
+                      <div class="agent-quote">&#8220;{agent.pull_quote}&#8221;</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </div>
+</section>

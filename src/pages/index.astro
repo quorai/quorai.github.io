@@ -1,0 +1,101 @@
+---
+import TopBar from '../components/TopBar.astro';
+import Hero from '../components/Hero.astro';
+import Pipeline from '../components/Pipeline.astro';
+import Roster from '../components/Roster.astro';
+import RunBlock from '../components/RunBlock.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quorai — Multi-Agent AI Trading Sandbox</title>
+    <meta name="description" content="Open-source educational proof-of-concept for multi-agent LLM investment analysis. Built on LangGraph." />
+    <meta name="google-site-verification" content="TEQI0aKYohy5t6A8_90kr34R1fsjoRW7_nQB6Tk3t8Y" />
+    <link rel="canonical" href="https://quorai.github.io/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://quorai.github.io/" />
+    <meta property="og:title" content="Quorai — Multi-Agent AI Trading Sandbox" />
+    <meta property="og:description" content="Open-source educational proof-of-concept for multi-agent LLM investment analysis. Built on LangGraph." />
+    <meta property="og:image" content="https://quorai.github.io/assets/logo-detailed.jpeg" />
+    <meta property="og:image:width" content="2752" />
+    <meta property="og:image:height" content="1536" />
+    <meta property="og:site_name" content="Quorai" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Quorai — Multi-Agent AI Trading Sandbox" />
+    <meta name="twitter:description" content="Open-source educational proof-of-concept for multi-agent LLM investment analysis. Built on LangGraph." />
+    <meta name="twitter:image" content="https://quorai.github.io/assets/logo-detailed.jpeg" />
+
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Quorai",
+      "description": "Open-source educational proof-of-concept for multi-agent LLM investment analysis. Built on LangGraph.",
+      "url": "https://quorai.github.io/",
+      "codeRepository": "https://github.com/quorai/quorai",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Linux, macOS, Windows",
+      "programmingLanguage": "Python",
+      "license": "https://opensource.org/licenses/MIT",
+      "keywords": "ai agents, multi-agent, langgraph, langchain, trading, backtesting, algorithmic trading, llm, portfolio management"
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <TopBar />
+    <Hero />
+
+    <!-- §01 Premise -->
+    <section id="about">
+      <div class="section-inner">
+        <div class="section-head">
+          <div class="section-num"><span>§ 01</span> &nbsp;Premise</div>
+          <h2>What this is, and what it isn't.</h2>
+          <p class="lede">
+            Quorai is not a product. It's a small open-source repo exploring one idea: can
+            structured disagreement between LLM agents produce more honest trading signals than
+            a single model talking to itself?
+          </p>
+        </div>
+        <div class="section-body prose">
+          <p>
+            The name blends <em>quorum</em> — a deliberating body — with <strong>AI</strong>.
+            That is the system's core mechanic: each agent embodies a known investment philosophy
+            (Graham's margin of safety, Simons' stat-arb, Dalio's debt-cycle lens, and so on),
+            analyses the same ticker independently, and casts a vote. The votes are aggregated
+            by group, scaled by each agent's recent hit-rate, then passed to a portfolio manager
+            that emits the final action.
+          </p>
+          <p>
+            The project is inspired by
+            <a href="https://github.com/virattt/ai-hedge-fund" target="_blank" rel="noopener">virattt/ai-hedge-fund</a>
+            and
+            <a href="https://github.com/TauricResearch/TradingAgents" target="_blank" rel="noopener">TauricResearch/TradingAgents</a>.
+            It's meant as a study aid and a place to compare prompting strategies — not as a
+            recommendation engine. <strong>No real orders are ever placed.</strong>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <Pipeline />
+    <Roster />
+    <RunBlock />
+    <Footer />
+  </body>
+</html>

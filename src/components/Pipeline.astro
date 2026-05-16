@@ -1,0 +1,143 @@
+---
+---
+<section id="pipeline">
+  <div class="section-inner">
+    <div class="section-head">
+      <div class="section-num"><span>§ 02</span> &nbsp;Pipeline</div>
+      <h2>One run, six stages.</h2>
+      <p class="lede">
+        A single ticker traverses the graph below once per trading day. Boxes are
+        deterministic where the maths allows; only those that need judgement call an LLM.
+      </p>
+    </div>
+
+    <!-- pipeline card spans full section-inner width -->
+    <div class="pipeline pipeline-graph">
+      <span class="pipeline-label">trading-day graph</span>
+
+      <ul class="pipeline-legend" aria-label="Node types">
+        <li><span class="gnode-glyph t-io"></span> i/o</li>
+        <li><span class="gnode-glyph t-llm"></span> llm call</li>
+        <li><span class="gnode-glyph t-math"></span> deterministic</li>
+        <li><span class="gnode-glyph t-fan"></span> fan-out</li>
+      </ul>
+
+      <div class="gwrap">
+
+        <!-- Zone 2: dashed rail with markers + edge chips -->
+        <div class="grail">
+          <span class="grail-line" aria-hidden="true"></span>
+
+          <ul class="gmarkers" aria-hidden="true">
+            <li class="gmark" data-type="io"   style="left:7.14%"></li>
+            <li class="gmark" data-type="llm"  style="left:21.43%"></li>
+            <li class="gmark" data-type="fan"  style="left:35.71%"></li>
+            <li class="gmark" data-type="llm"  style="left:50%"></li>
+            <li class="gmark" data-type="math" style="left:64.29%"></li>
+            <li class="gmark" data-type="llm"  style="left:78.57%"></li>
+            <li class="gmark" data-type="io"   style="left:92.86%"></li>
+          </ul>
+
+          <ul class="gedges" aria-hidden="true">
+            <li style="left:14.29%"><code>tickers[]</code></li>
+            <li style="left:28.57%"><code>regime + w[]</code></li>
+            <li style="left:42.86%"><code>25× signals</code></li>
+            <li style="left:57.14%"><code>consensus</code></li>
+            <li style="left:71.43%"><code>limits</code></li>
+            <li style="left:85.71%"><code>action</code></li>
+          </ul>
+        </div>
+
+        <!-- Zone 3: node text (7 equal columns) -->
+        <ol class="gnodes">
+          <li class="gnode" data-type="io">
+            <div class="gnode-head"><span class="gnode-ord">00</span><span class="gnode-type">in</span></div>
+            <div class="gnode-lbl">Tickers + portfolio</div>
+            <div class="gnode-note">User-supplied universe.</div>
+          </li>
+          <li class="gnode" data-type="llm">
+            <div class="gnode-head"><span class="gnode-ord">01</span><span class="gnode-type">llm</span></div>
+            <div class="gnode-lbl">Preflight</div>
+            <div class="gnode-note">Regime classifier; loads conviction weights.</div>
+          </li>
+          <li class="gnode" data-type="fan">
+            <div class="gnode-head"><span class="gnode-ord">02</span><span class="gnode-type">llm × 25</span></div>
+            <div class="gnode-lbl">Analyst agents</div>
+            <div class="gnode-note">Personas score independently.</div>
+          </li>
+          <li class="gnode" data-type="llm">
+            <div class="gnode-head"><span class="gnode-ord">03</span><span class="gnode-type">llm</span></div>
+            <div class="gnode-lbl">Debate node</div>
+            <div class="gnode-note">Group consensus + hit-rate scaling.</div>
+          </li>
+          <li class="gnode" data-type="math">
+            <div class="gnode-head"><span class="gnode-ord">04</span><span class="gnode-type">math</span></div>
+            <div class="gnode-lbl">Risk manager</div>
+            <div class="gnode-note">Vol &amp; correlation position limits.</div>
+          </li>
+          <li class="gnode" data-type="llm">
+            <div class="gnode-head"><span class="gnode-ord">05</span><span class="gnode-type">llm</span></div>
+            <div class="gnode-lbl">Portfolio manager</div>
+            <div class="gnode-note">Final action + sizing + reasoning.</div>
+          </li>
+          <li class="gnode" data-type="io">
+            <div class="gnode-head"><span class="gnode-ord">06</span><span class="gnode-type">out</span></div>
+            <div class="gnode-lbl">Decision + log</div>
+            <div class="gnode-note">JSONL feeds back into next run.</div>
+          </li>
+        </ol>
+
+      </div>
+    </div>
+
+    <div class="section-body">
+      <ol class="steps" style="margin-top:36px">
+        <li>
+          <div class="step-mark"><b>01</b>preflight</div>
+          <div>
+            <strong>Classify the regime, load the weights.</strong>
+            <p>Each trading day the pipeline optionally classifies the current SPY regime
+            (bull / bear / risk-off / neutral) and loads per-agent conviction weights built
+            from prior labelled runs.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-mark"><b>02</b>analyse</div>
+          <div>
+            <strong>Twenty-five personas read the same evidence.</strong>
+            <p>Each persona independently analyses each ticker from price history,
+            fundamentals, insider trades, and news. When regime selection is active, only
+            groups relevant to the current regime run — e.g. risk-off routes to macro, deep
+            value, and sentiment.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-mark"><b>03</b>debate</div>
+          <div>
+            <strong>Aggregate, scale, agree.</strong>
+            <p>Agent votes are aggregated into group consensus signals. When conviction
+            weights are loaded, each analyst's vote is scaled by their rolling directional
+            hit-rate before the group sum.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-mark"><b>04</b>risk</div>
+          <div>
+            <strong>Pure maths — no LLM call.</strong>
+            <p>Volatility- and correlation-adjusted position limits are computed
+            deterministically, so an excitable agent can't oversize a bad idea.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-mark"><b>05</b>decide</div>
+          <div>
+            <strong>One final decision, written down.</strong>
+            <p>The portfolio manager emits a <em>buy / sell / hold</em> decision with sizing
+            and reasoning. Per-agent signals are written to a JSONL log that feeds back into
+            the next run's conviction weights via the forward-return labeler.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
