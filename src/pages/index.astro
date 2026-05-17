@@ -95,6 +95,87 @@ import '../styles/global.css';
 
     <Pipeline />
     <Roster />
+
+    <!-- §04 Method -->
+    <section id="math">
+      <div class="section-inner">
+        <div class="section-head">
+          <div class="section-num"><span>§ 04</span> &nbsp;Method</div>
+          <h2>Under the votes, a quantitative core.</h2>
+          <p class="lede">
+            The agents debate in natural language, but each one calls into a small Python library
+            that does the actual arithmetic. Two pieces are worth surfacing: how positions are
+            sized, and how intrinsic value is estimated.
+          </p>
+        </div>
+        <div class="section-body prose">
+          <h3>Position sizing</h3>
+          <p>
+            Every ticker gets a base notional limit, then two independent multipliers are applied.
+            First, realised volatility — annualised as <code>std(60-day returns) × √252</code> —
+            buckets the name into one of four tiers:
+          </p>
+          <div style="overflow-x: auto;">
+            <table>
+              <thead>
+                <tr><th>Annualised vol</th><th>Multiplier</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>&lt; 15 %</td><td><code>1.25×</code></td></tr>
+                <tr><td>15 – 30 %</td><td><code>1.0 − (vol − 0.15) × 0.5</code></td></tr>
+                <tr><td>30 – 50 %</td><td><code>0.75 − (vol − 0.30) × 0.5</code></td></tr>
+                <tr><td>&gt; 50 %</td><td><code>0.50×</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            Second, the average correlation with already-open positions scales the limit again —
+            concentrated bets get cut, uncorrelated additions get a small boost:
+          </p>
+          <div style="overflow-x: auto;">
+            <table>
+              <thead>
+                <tr><th>Avg correlation</th><th>Multiplier</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>≥ 0.80</td><td><code>0.70×</code></td></tr>
+                <tr><td>0.60 – 0.80</td><td><code>0.85×</code></td></tr>
+                <tr><td>0.40 – 0.60</td><td><code>1.00×</code></td></tr>
+                <tr><td>0.20 – 0.40</td><td><code>1.05×</code></td></tr>
+                <tr><td>&lt; 0.20</td><td><code>1.10×</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            Final limit: <code>base_limit × vol_multiplier × corr_multiplier</code>, then clamped
+            to available cash and margin.
+          </p>
+
+          <h3>Valuation models</h3>
+          <p>
+            The valuation agent runs four methods in parallel and blends their outputs.
+            <strong>Owner Earnings</strong> (Buffett): <code>net_income + D&amp;A − capex − Δworking_capital</code>,
+            projected ten years, discounted to present value, then haircut 25 % for margin of
+            safety. <strong>DCF</strong>: <code>Σ FCF_t / (1+r)^t + TV / (1+r)^n</code> with
+            terminal value <code>TV = FCF_n × (1 + g) / (r − g)</code>.
+          </p>
+          <p>
+            <strong>EV/EBITDA cross-check</strong>:
+            <code>implied_equity = median_sector_EV/EBITDA × current_EBITDA − net_debt</code>.
+            <strong>Residual income</strong> (Edwards-Bell-Ohlson):
+            <code>RI_t = net_income_t − cost_of_equity × book_value_&#123;t−1&#125;</code>, summed in
+            present-value terms on top of current book value.
+          </p>
+          <p>
+            The four estimates are blended at fixed weights —
+            <strong>DCF 35 % · Owner Earnings 35 % · EV/EBITDA 20 % · Residual Income 10 %</strong>
+            — and the gap <code>(weighted_intrinsic − market_cap) / market_cap</code> drives
+            the signal at a ±15 % threshold.
+          </p>
+        </div>
+      </div>
+    </section>
+
     <RunBlock />
     <Footer />
   </body>
