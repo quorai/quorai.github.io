@@ -2,11 +2,16 @@
 ---
 <header class="topbar">
   <div class="brand">
-    <span class="dot"></span>
+    <img src="/assets/quorai_owl.png" class="brand-owl" alt="quorai owl" />
     <b>quorai</b>
     <span class="brand-meta">/ multi-agent trading sandbox</span>
   </div>
-  <nav>
+
+  <button class="burger" aria-label="Toggle menu" aria-expanded="false" aria-controls="topbar-nav">
+    <span></span><span></span><span></span>
+  </button>
+
+  <nav id="topbar-nav">
     <a href="#about">About</a>
     <a href="#pipeline">Pipeline</a>
     <a href="#agents">Agents</a>
@@ -20,3 +25,21 @@
     </a>
   </nav>
 </header>
+
+<script>
+  const burger = document.querySelector('.burger') as HTMLButtonElement;
+  const nav    = document.getElementById('topbar-nav') as HTMLElement;
+
+  burger.addEventListener('click', () => {
+    const open = burger.getAttribute('aria-expanded') === 'true';
+    burger.setAttribute('aria-expanded', String(!open));
+    nav.classList.toggle('open', !open);
+  });
+
+  nav.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      burger.setAttribute('aria-expanded', 'false');
+      nav.classList.remove('open');
+    });
+  });
+</script>
