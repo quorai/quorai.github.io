@@ -42,7 +42,7 @@
             <li style="left:14.29%"><code>tickers[]</code></li>
             <li style="left:28.57%"><code>regime + w[]</code></li>
             <li style="left:42.86%"><code>25× signals</code></li>
-            <li style="left:57.14%"><code>consensus</code></li>
+            <li style="left:57.14%"><code>school stances</code></li>
             <li style="left:71.43%"><code>limits</code></li>
             <li style="left:85.71%"><code>action</code></li>
           </ul>
@@ -68,7 +68,7 @@
           <li class="gnode" data-type="llm">
             <div class="gnode-head"><span class="gnode-ord">03</span><span class="gnode-type">llm</span></div>
             <div class="gnode-lbl">Debate node</div>
-            <div class="gnode-note">Group consensus + hit-rate scaling.</div>
+            <div class="gnode-note">Schools take stances; splits surface.</div>
           </li>
           <li class="gnode" data-type="math">
             <div class="gnode-head"><span class="gnode-ord">04</span><span class="gnode-type">math</span></div>
@@ -114,10 +114,11 @@
         <li>
           <div class="step-mark"><b>03</b>debate</div>
           <div>
-            <strong>Aggregate, scale, agree.</strong>
-            <p>Agent votes are aggregated into group consensus signals. When conviction
-            weights are loaded, each analyst's vote is scaled by their rolling directional
-            hit-rate before the group sum.</p>
+            <strong>Schools take sides.</strong>
+            <p>Within each of the six schools, members' signals are combined weighted by
+            confidence — not by headcount. When at least one school turns bullish and another
+            bearish on the same ticker, an LLM moderator names the split before the risk and
+            portfolio stages run.</p>
           </div>
         </li>
         <li>
