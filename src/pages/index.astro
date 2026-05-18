@@ -77,10 +77,11 @@ import '../styles/global.css';
           <p>
             The name blends <em>quorum</em> — a deliberating body — with <strong>AI</strong>.
             That is the system's core mechanic: each agent embodies a known investment philosophy
-            (Graham's margin of safety, Simons' stat-arb, Dalio's debt-cycle lens, and so on),
-            analyses the same ticker independently, and casts a vote. The votes are aggregated
-            by group, scaled by each agent's recent hit-rate, then passed to a portfolio manager
-            that emits the final action.
+            (Graham's margin of safety, Simons' stat-arb, Dalio's debt-cycle lens, and so on)
+            and analyses the same ticker independently. The agents are sorted into six schools
+            of thought; within each school, members' signals are combined weighted by conviction
+            — not by headcount — into a single stance. When schools disagree, a moderator surfaces
+            the split before a portfolio manager turns the result into a buy / sell / hold.
           </p>
           <p>
             The project is inspired by
@@ -102,11 +103,11 @@ import '../styles/global.css';
       <div class="section-inner">
         <div class="section-head">
           <div class="section-num"><span>§ 04</span> &nbsp;Method</div>
-          <h2>Under the votes, a quantitative core.</h2>
+          <h2>Under the debate, a quantitative core.</h2>
           <p class="lede">
-            The agents debate in natural language, but each one calls into a small Python library
-            that does the actual arithmetic. Two pieces are worth surfacing: how positions are
-            sized, and how intrinsic value is estimated.
+            The schools argue in natural language, but each analyst calls into a small Python
+            library that does the actual arithmetic. Two pieces are worth surfacing: how positions
+            are sized, and how intrinsic value is estimated.
           </p>
         </div>
         <div class="section-body prose">
