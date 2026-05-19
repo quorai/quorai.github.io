@@ -1,0 +1,13 @@
+{
+  "name": "Quorai",
+  "short_name": "Quorai",
+  "description": "Open-source educational proof-of-concept for multi-agent LLM investment analysis. Built on LangGraph.",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#1c1a16",
+  "background_color": "#f1ece0",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
