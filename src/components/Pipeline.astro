@@ -30,7 +30,7 @@
 
           <ul class="gmarkers" aria-hidden="true">
             <li class="gmark" data-type="io"   style="left:7.14%"></li>
-            <li class="gmark" data-type="llm"  style="left:21.43%"></li>
+            <li class="gmark" data-type="math" style="left:21.43%"></li>
             <li class="gmark" data-type="fan"  style="left:35.71%"></li>
             <li class="gmark" data-type="llm"  style="left:50%"></li>
             <li class="gmark" data-type="math" style="left:64.29%"></li>
@@ -55,10 +55,10 @@
             <div class="gnode-lbl">Tickers + portfolio</div>
             <div class="gnode-note">User-supplied universe.</div>
           </li>
-          <li class="gnode" data-type="llm">
-            <div class="gnode-head"><span class="gnode-ord">01</span><span class="gnode-type">llm</span></div>
+          <li class="gnode" data-type="math">
+            <div class="gnode-head"><span class="gnode-ord">01</span><span class="gnode-type">math</span></div>
             <div class="gnode-lbl">Preflight</div>
-            <div class="gnode-note">Regime classifier; loads conviction weights.</div>
+            <div class="gnode-note">Deterministic SPY regime classifier; loads conviction weights.</div>
           </li>
           <li class="gnode" data-type="fan">
             <div class="gnode-head"><span class="gnode-ord">02</span><span class="gnode-type">llm × 25</span></div>
@@ -66,9 +66,9 @@
             <div class="gnode-note">Personas score independently.</div>
           </li>
           <li class="gnode" data-type="llm">
-            <div class="gnode-head"><span class="gnode-ord">03</span><span class="gnode-type">llm</span></div>
+            <div class="gnode-head"><span class="gnode-ord">03</span><span class="gnode-type">llm*</span></div>
             <div class="gnode-lbl">Debate node</div>
-            <div class="gnode-note">Schools take stances; splits surface.</div>
+            <div class="gnode-note">Deterministic aggregation; LLM fires only on contested tickers.</div>
           </li>
           <li class="gnode" data-type="math">
             <div class="gnode-head"><span class="gnode-ord">04</span><span class="gnode-type">math</span></div>
@@ -114,11 +114,13 @@
         <li>
           <div class="step-mark"><b>03</b>debate</div>
           <div>
-            <strong>Schools take sides.</strong>
-            <p>Within each of the six schools, members' signals are combined weighted by
-            confidence — not by headcount. When at least one school turns bullish and another
-            bearish on the same ticker, an LLM moderator names the split before the risk and
-            portfolio stages run.</p>
+            <strong>Schools take sides — deterministically first.</strong>
+            <p>Within each of the six schools, members' signals are confidence-weighted
+            (optionally multiplied by their rolling conviction score via
+            <code>--use-conviction-weights</code>) and averaged into a group stance:
+            ≥ +0.25 → bullish, ≤ −0.25 → bearish, otherwise neutral. Only when at least
+            one school is bullish <em>and</em> another is bearish on the same ticker does
+            an LLM moderator fire to name and summarise the split.</p>
           </div>
         </li>
         <li>
@@ -134,8 +136,11 @@
           <div>
             <strong>One final decision, written down.</strong>
             <p>The portfolio manager emits a <em>buy / sell / hold</em> decision with sizing
-            and reasoning. Per-agent signals are written to a JSONL log that feeds back into
-            the next run's conviction weights via the forward-return labeler.</p>
+            and reasoning. Per-agent signals are written to a JSONL log. To close the
+            feedback loop, run the <code>backtester feedback</code> subcommand after each
+            run to label signals with 1 d / 5 d / 20 d forward returns and write
+            <code>weights.json</code>; then pass <code>--use-conviction-weights</code> on
+            the next run.</p>
           </div>
         </li>
       </ol>

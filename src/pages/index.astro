@@ -139,6 +139,15 @@ import '@fontsource/ibm-plex-mono/600.css';
             It's meant as a study aid and a place to compare prompting strategies — not as a
             recommendation engine. <strong>No real orders are ever placed.</strong>
           </p>
+          <p>
+            Two optional layers shape which agents run and how much weight they carry. A
+            market-regime classifier reads the current SPY trend each morning and narrows the
+            active analyst subset to the groups most relevant to that regime — reducing noise
+            and token cost on bear or risk-off days. A conviction-weight feedback loop
+            tracks each agent's rolling directional hit-rate across labelled historical
+            signals and proportionally upweights the most accurate voices in the debate
+            aggregation on the next run.
+          </p>
         </div>
       </div>
     </section>
@@ -222,6 +231,129 @@ import '@fontsource/ibm-plex-mono/600.css';
             — and the gap <code>(weighted_intrinsic − market_cap) / market_cap</code> drives
             the signal at a ±15 % threshold.
           </p>
+
+          <h3>Multi-stage DCF and quality adjustment</h3>
+          <p>
+            The DCF agent runs three growth phases (high, fade, terminal) discounted at WACC.
+            Before discounting, a quality adjustment scales the projected cash flows:
+            <code>quality_factor = max(0.7, 1 − fcf_volatility × 0.5)</code> where
+            <code>fcf_volatility = std(FCF) / mean(FCF)</code> (coefficient of variation).
+            A scenario overlay then weights bear / base / bull growth assumptions at
+            <strong>20 % / 60 % / 20 %</strong> to capture tail outcomes without
+            over-engineering the base case.
+          </p>
+
+          <h3>WACC</h3>
+          <p>
+            <code>cost_of_equity = RF + β × MRP</code> (RF = 4.5 %, MRP = 6 %, β from
+            TTM metrics). Cost of debt:
+            <code>max(RF + 0.01, RF + 10 / interest_coverage)</code>. Final WACC:
+            <code>(E/V) × CoE + (D/V) × CoD × (1 − 0.25)</code>, floored at 6 % and
+            capped at 20 % to keep the discount rate within a plausible range regardless of
+            data quality.
+          </p>
+
+          <h3>Conviction-weight feedback loop</h3>
+          <p>
+            Every per-agent, per-ticker signal written to the JSONL log can be labelled with
+            1 d / 5 d / 20 d forward returns via the <code>backtester feedback</code>
+            subcommand. A rolling per-agent directional hit-rate is computed from those
+            labels and serialised to <code>src/feedback/weights.json</code>. On the next
+            run, passing <code>--use-conviction-weights</code> loads those weights and
+            multiplies each agent's confidence by its historical accuracy before the debate
+            aggregation — so agents that have been right proportionally louder.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- §05 Safety -->
+    <section id="safety">
+      <div class="section-inner">
+        <div class="section-head">
+          <div class="section-num"><span>§ 05</span> &nbsp;Safety</div>
+          <h2>Hard stops first, soft limits on top.</h2>
+          <p class="lede">
+            The Alpaca client refuses to construct a live-trading client unless
+            <code>ALPACA_PAPER=True</code>. That single check is the base safety net;
+            everything else is layered on top of it.
+          </p>
+        </div>
+        <div class="section-body prose">
+
+          <h3>Risk-profile presets</h3>
+          <p>
+            Pass <code>--risk-profile</code> to bundle four related caps in one flag.
+            Individual caps are still overridable via env vars for a single run.
+          </p>
+          <div style="overflow-x: auto;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Profile</th>
+                  <th><code>base_limit</code></th>
+                  <th>Notional cap</th>
+                  <th>Qty cap</th>
+                  <th>Daily loss limit</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><code>conservative</code></td><td>10 %</td><td>$5,000</td><td>500 shares</td><td>2 %</td></tr>
+                <tr><td><code>cautious</code></td><td>15 %</td><td>$7,500</td><td>750 shares</td><td>3 %</td></tr>
+                <tr><td><code>balanced</code> <em>(default)</em></td><td>20 %</td><td>$10,000</td><td>1,000 shares</td><td>5 %</td></tr>
+                <tr><td><code>aggressive</code></td><td>30 %</td><td>$20,000</td><td>2,000 shares</td><td>8 %</td></tr>
+                <tr><td><code>speculative</code></td><td>50 %</td><td>$50,000</td><td>5,000 shares</td><td>15 %</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Telegram approval gate</h3>
+          <p>
+            Add <code>--require-approval</code> to send proposed orders as an inline
+            Telegram message before any order is submitted. The gate is fail-closed: missing
+            credentials, a Telegram error, a rejection, or a timeout (default 30 min) all
+            abort with zero orders. The bot also reads a plain-text command inbox at the
+            start of each run:
+          </p>
+          <div style="overflow-x: auto;">
+            <table>
+              <thead><tr><th>Message</th><th>Effect</th></tr></thead>
+              <tbody>
+                <tr><td><code>accept only sales</code></td><td>Suppress all buy orders for the next run only</td></tr>
+                <tr><td><code>skip next day</code></td><td>Skip the next scheduled run entirely</td></tr>
+                <tr><td><code>pause</code></td><td>Pause all runs until you send <code>continue</code></td></tr>
+                <tr><td><code>continue</code></td><td>Clear an active pause</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Command state persists in <code>logs/command_state.json</code> across restarts.</p>
+
+          <h3>Kill switch</h3>
+          <p>
+            Set <code>KILL_SWITCH=true</code> in <code>.env</code> to reject every order
+            immediately — no LLM call, no broker call — until the flag is cleared.
+          </p>
+
+          <h3>Known limitations</h3>
+          <ul>
+            <li>
+              <strong>Notional cap is per-order, not per-cycle.</strong> With N tickers,
+              up to N × $10,000 (at the <code>balanced</code> preset) can be submitted in a
+              single run before any cap fires.
+            </li>
+            <li>
+              <strong>Sub-$1 fractional buys are silently dropped.</strong> A tiny allocation
+              on a high-priced stock rounds to <code>0.000</code> shares and is classified as
+              <em>skipped</em> with no warning.
+            </li>
+            <li>
+              <strong>Daily-loss limit re-baselines if SOD equity file is missing.</strong>
+              After a crash, the runner resets the baseline to current (already
+              drawn-down) equity, effectively disabling the limit for that day. Use
+              <code>--catch-up</code> to recover the prior-close equity from Alpaca's
+              portfolio history instead.
+            </li>
+          </ul>
         </div>
       </div>
     </section>

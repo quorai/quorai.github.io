@@ -3,7 +3,7 @@
 <section id="run">
   <div class="section-inner">
     <div class="section-head">
-      <div class="section-num"><span>§ 05</span> &nbsp;Use</div>
+      <div class="section-num"><span>§ 06</span> &nbsp;Use</div>
       <h2>Run it yourself.</h2>
       <p class="lede">
         Clone the repo, install with <code>uv sync</code>, and invoke one of the entry points
@@ -14,20 +14,28 @@
     <div class="section-body">
       <div class="runs">
         <div class="run">
-          <div class="run-label">cli</div>
-          <pre class="run-cmd">uv run python src/main.py <span class="flag">--tickers</span> <span class="arg">AAPL,MSFT</span></pre>
-        </div>
-        <div class="run">
-          <div class="run-label">backtest</div>
-          <pre class="run-cmd">uv run backtester <span class="flag">--tickers</span> <span class="arg">AAPL,MSFT</span> <span class="flag">--model</span> <span class="arg">deepseek/deepseek-chat</span> <span class="flag">--model-provider</span> <span class="arg">OpenRouter</span></pre>
+          <div class="run-label">quickstart</div>
+          <pre class="run-cmd">uv run backtester <span class="flag">--tickers</span> <span class="arg">AAPL,MSFT</span> <span class="flag">--model</span> <span class="arg">deepseek/deepseek-chat</span> <span class="flag">--model-provider</span> <span class="arg">OpenRouter</span> <span class="flag">--show-reasoning</span></pre>
         </div>
         <div class="run">
           <div class="run-label">risk profile</div>
-          <pre class="run-cmd">uv run backtester <span class="flag">--tickers</span> <span class="arg">AAPL,MSFT</span> <span class="flag">--risk-profile</span> <span class="arg">speculative</span></pre>
+          <pre class="run-cmd">uv run backtester <span class="flag">--tickers</span> <span class="arg">AAPL,MSFT</span> <span class="flag">--model</span> <span class="arg">deepseek/deepseek-chat</span> <span class="flag">--model-provider</span> <span class="arg">OpenRouter</span> <span class="flag">--risk-profile</span> <span class="arg">speculative</span></pre>
+        </div>
+        <div class="run">
+          <div class="run-label">regime + conviction</div>
+          <pre class="run-cmd">uv run backtester <span class="flag">--tickers</span> <span class="arg">AAPL,MSFT</span> <span class="flag">--model</span> <span class="arg">deepseek/deepseek-chat</span> <span class="flag">--model-provider</span> <span class="arg">OpenRouter</span> <span class="flag">--use-regime-selection</span> <span class="flag">--use-conviction-weights</span></pre>
+        </div>
+        <div class="run">
+          <div class="run-label">score signals</div>
+          <pre class="run-cmd">uv run backtester feedback <span class="flag">--signal-log</span> <span class="arg">logs/backtest/signals/signals-&lt;run-id&gt;.jsonl</span> <span class="cmt"># writes weights.json</span></pre>
         </div>
         <div class="run">
           <div class="run-label">a / b compare</div>
-          <pre class="run-cmd">uv run backtester compare <span class="flag">--mode</span> <span class="arg">both</span> <span class="flag">--tickers</span> <span class="arg">AAPL,MSFT</span> <span class="cmt"># with vs. without conviction weights</span></pre>
+          <pre class="run-cmd">uv run backtester compare <span class="flag">--mode</span> <span class="arg">both</span> <span class="flag">--tickers</span> <span class="arg">AAPL,MSFT</span> <span class="flag">--model</span> <span class="arg">deepseek/deepseek-chat</span> <span class="flag">--model-provider</span> <span class="arg">OpenRouter</span></pre>
+        </div>
+        <div class="run">
+          <div class="run-label">paper live + Telegram</div>
+          <pre class="run-cmd">uv run python src/live_trading.py <span class="flag">--tickers</span> <span class="arg">AAPL,MSFT</span> <span class="flag">--model</span> <span class="arg">deepseek/deepseek-chat</span> <span class="flag">--model-provider</span> <span class="arg">OpenRouter</span> <span class="flag">--require-approval</span> <span class="flag">--dry-run</span></pre>
         </div>
       </div>
 
@@ -35,7 +43,12 @@
         <code>--risk-profile</code> accepts <code>conservative</code>, <code>cautious</code>,
         <code>balanced</code> (default), <code>aggressive</code>, or <code>speculative</code>
         — each preset bundles position-sizing limits, order-notional caps, and a daily loss
-        limit. See the
+        limit. <code>--use-conviction-weights</code> requires a prior <code>feedback</code>
+        run to have produced <code>weights.json</code>. Live trading is paper-only by
+        construction (the Alpaca client refuses to connect to a live endpoint). For
+        historically accurate backtests, seed the SEC EDGAR fundamentals cache first:
+        <code>uv run python experiments/seed_sec_fundamentals.py --tickers AAPL,MSFT</code>.
+        See the
         <a href="https://github.com/quorai/quorai" target="_blank" rel="noopener">README</a>
         for the full setup walkthrough.
       </p>

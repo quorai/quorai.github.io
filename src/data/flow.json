@@ -7,6 +7,10 @@
       "label": "Preflight",
       "note": "Regime classifier + conviction weights"
     },
+    "analysts": {
+      "label": "Analyst Fan-out",
+      "note": "Up to 25 personas score the same evidence"
+    },
     "debate": {
       "label": "Debate Node",
       "note": "LLM moderates contested tickers"
