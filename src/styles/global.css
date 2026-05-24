@@ -327,6 +327,19 @@ section {
 }
 .prose table tr:first-child td { border-top-color: var(--rule); }
 
+/* Wide table — expands to full section-inner width (negates the 154px body indent) */
+.table-wide {
+  margin-left: -154px;
+  width: calc(100% + 154px);
+  overflow-x: auto;
+}
+.table-wide table {
+  max-width: none;
+}
+@media (max-width: 820px) {
+  .table-wide { margin-left: 0; width: 100%; }
+}
+
 /* ── Pipeline graph (typed DAG view) ────────────────────── */
 .pipeline {
   border: 1px solid var(--rule);

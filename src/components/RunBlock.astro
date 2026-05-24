@@ -3,7 +3,7 @@
 <section id="run">
   <div class="section-inner">
     <div class="section-head">
-      <div class="section-num"><span>§ 06</span> &nbsp;Use</div>
+      <div class="section-num"><span>§ 07</span> &nbsp;Use</div>
       <h2>Run it yourself.</h2>
       <p class="lede">
         Clone the repo, install with <code>uv sync</code>, and invoke one of the entry points
@@ -37,6 +37,10 @@
           <div class="run-label">paper live + Telegram</div>
           <pre class="run-cmd">uv run python src/live_trading.py <span class="flag">--tickers</span> <span class="arg">AAPL,MSFT</span> <span class="flag">--model</span> <span class="arg">deepseek/deepseek-chat</span> <span class="flag">--model-provider</span> <span class="arg">OpenRouter</span> <span class="flag">--require-approval</span> <span class="flag">--dry-run</span></pre>
         </div>
+        <div class="run">
+          <div class="run-label">claude code (mcp)</div>
+          <pre class="run-cmd">claude mcp add quorai uvx quorai-mcp</pre>
+        </div>
       </div>
 
       <p class="run-note">
@@ -52,6 +56,7 @@
         <a href="https://github.com/quorai/quorai" target="_blank" rel="noopener">README</a>
         for the full setup walkthrough.
         For a browsable view of the cycle bundles written to <code>logs/</code>, see the read-only companion UI at <a href="https://github.com/quorai/quorai-ui" target="_blank" rel="noopener">quorai/quorai-ui</a>.
+        To expose the panel as a tool call to any MCP host (Claude Code, Claude Desktop, Cursor, Cline, …), run <code>claude mcp add quorai uvx quorai-mcp</code> — see the <a href="https://github.com/quorai/quorai#mcp-server" target="_blank" rel="noopener">MCP server section</a> of the README.
       </p>
 
       <div class="disclaimer">

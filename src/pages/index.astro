@@ -152,14 +152,189 @@ import '@fontsource/ibm-plex-mono/600.css';
       </div>
     </section>
 
+    <!-- §02 Compare -->
+    <section id="compare">
+      <div class="section-inner">
+        <div class="section-head">
+          <div class="section-num"><span>§ 02</span> &nbsp;Compare</div>
+          <h2>Where Quorai sits among the multi-agent trading repos.</h2>
+          <p class="lede">
+            Quorai is one of several open-source multi-agent LLM trading projects. The two
+            most-cited reference points are
+            <a href="https://github.com/virattt/ai-hedge-fund" target="_blank" rel="noopener">virattt/ai-hedge-fund</a>
+            — the popular persona-agent demo with a bundled web UI — and
+            <a href="https://github.com/TauricResearch/TradingAgents" target="_blank" rel="noopener">TauricResearch/TradingAgents</a>
+            — the LangGraph research framework behind
+            <a href="https://arxiv.org/abs/2412.20138" target="_blank" rel="noopener">arXiv:2412.20138</a>.
+            Quorai borrows from both and diverges from both.
+          </p>
+        </div>
+        <div class="section-body prose">
+          <div class="table-wide">
+            <table>
+              <thead>
+                <tr>
+                  <th>Area</th>
+                  <th>ai-hedge-fund</th>
+                  <th>TradingAgents</th>
+                  <th>Quorai</th>
+                </tr>
+              </thead>
+              <tbody>
+<tr>
+                  <td><strong>Agent roster</strong></td>
+                  <td>13 personas + 4 analytical + risk + PM</td>
+                  <td>4 analysts + Bull/Bear researchers + Trader + Risk team + PM</td>
+                  <td>25 personas across 6 schools + analytical agents</td>
+                </tr>
+                <tr>
+                  <td><strong>Orchestration</strong></td>
+                  <td>Sequential agent workflow</td>
+                  <td>LangGraph <code>StateGraph</code></td>
+                  <td>LangGraph <code>StateGraph</code> with parallel analyst fan-out</td>
+                </tr>
+                <tr>
+                  <td><strong>Debate mechanism</strong></td>
+                  <td>—</td>
+                  <td>Bull vs Bear structured debate (<code>max_debate_rounds</code> configurable)</td>
+                  <td>6 strategy-group aggregation (confidence-weighted) + LLM moderator on contested tickers only</td>
+                </tr>
+                <tr>
+                  <td><strong>Reflection / memory</strong></td>
+                  <td>—</td>
+                  <td>✅ Decision log with realised return + alpha-vs-SPY injected into next run's Portfolio Manager prompt</td>
+                  <td>✅ Per-agent rolling hit-rate from forward-return labelling drives next run's debate weights</td>
+                </tr>
+                <tr>
+                  <td><strong>Point-in-time SEC EDGAR</strong></td>
+                  <td>—</td>
+                  <td>—</td>
+                  <td>✅ Local SQLite XBRL cache; eliminates yfinance look-ahead bias on historical share counts and financials</td>
+                </tr>
+                <tr>
+                  <td><strong>Market regime gate</strong></td>
+                  <td>—</td>
+                  <td>—</td>
+                  <td>✅ Daily SPY regime classifier (bull / bear / risk-off / neutral) gates active analyst subset and filters proposed orders</td>
+                </tr>
+                <tr>
+                  <td><strong>A/B comparison harness</strong></td>
+                  <td>—</td>
+                  <td>—</td>
+                  <td>✅ <code>backtester compare</code> — side-by-side metrics for regime-on vs off, uniform vs conviction weights</td>
+                </tr>
+                <tr>
+                  <td><strong>Live / paper trading</strong></td>
+                  <td>Backtest only ("does not actually make any trades")</td>
+                  <td>Backtest / simulated exchange only</td>
+                  <td>✅ Alpaca paper trading (live keys hard-blocked at the client layer)</td>
+                </tr>
+                <tr>
+                  <td><strong>Human approval gate</strong></td>
+                  <td>—</td>
+                  <td>—</td>
+                  <td>✅ Telegram approve/reject per cycle + command inbox (pause, only-sells, skip-next, resume)</td>
+                </tr>
+                <tr>
+                  <td><strong>Risk controls</strong></td>
+                  <td>Single Risk Manager agent</td>
+                  <td>Risk Management Team agents</td>
+                  <td>✅ 5 preset profiles bundling position sizing + per-order notional / qty / daily-loss caps</td>
+                </tr>
+                <tr>
+                  <td><strong>Per-agent model routing</strong></td>
+                  <td>—</td>
+                  <td>Two-tier: <code>deep_think_llm</code> / <code>quick_think_llm</code></td>
+                  <td>✅ Per-analyst override (<code>--agent-model AGENT=model/PROVIDER</code>)</td>
+                </tr>
+                <tr>
+                  <td><strong>Token telemetry + prompt caching</strong></td>
+                  <td>—</td>
+                  <td>—</td>
+                  <td>✅ Per-agent input / output / cache tokens accumulated across the run; Anthropic prompt cache surfaced separately</td>
+                </tr>
+                <tr>
+                  <td><strong>Parallel ticker execution</strong></td>
+                  <td>—</td>
+                  <td>—</td>
+                  <td>✅ Thread-pool fan-out via <code>QUORAI_PARALLEL_TICKERS=N</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Checkpoint / resume</strong></td>
+                  <td>—</td>
+                  <td>✅ LangGraph checkpoint per ticker (<code>--checkpoint</code>)</td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td><strong>LLM provider coverage</strong></td>
+                  <td>OpenAI, Anthropic, Groq, DeepSeek, Ollama</td>
+                  <td>OpenAI, Google, Anthropic, xAI, DeepSeek, Qwen, GLM, MiniMax, OpenRouter, Ollama, Azure</td>
+                  <td>OpenAI, Anthropic + per-agent overrides</td>
+                </tr>
+                <tr>
+                  <td><strong>Docker</strong></td>
+                  <td>—</td>
+                  <td>✅</td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td><strong>Academic paper</strong></td>
+                  <td>—</td>
+                  <td>✅ <a href="https://arxiv.org/abs/2412.20138" target="_blank" rel="noopener">arXiv:2412.20138</a></td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td><strong>Web UI</strong></td>
+                  <td>✅ Bundled, full-featured</td>
+                  <td>— (CLI / TUI only)</td>
+                  <td>Separate read-only inspector (<a href="https://github.com/quorai/quorai-ui" target="_blank" rel="noopener">quorai-ui</a>)</td>
+                </tr>
+                <tr>
+                  <td><strong>MCP server</strong></td>
+                  <td>—</td>
+                  <td>—</td>
+                  <td>✅ <code>quorai-mcp</code> via <code>uvx</code> — full analyst panel callable from Claude Code, Cursor, Cline, and any MCP host</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="compare-note">
+            Comparison based on the public <code>ai-hedge-fund</code> and <code>TradingAgents</code>
+            READMEs at the time of writing. Corrections welcome via PR.
+          </p>
+
+          <h3>Which should you use?</h3>
+          <ul>
+            <li>
+              <strong><a href="https://github.com/virattt/ai-hedge-fund" target="_blank" rel="noopener">ai-hedge-fund</a></strong>
+              if you want a polished bundled web UI, the simplest "try LLM-driven trading" demo,
+              or the largest roster of well-known investor personas out of the box.
+            </li>
+            <li>
+              <strong><a href="https://github.com/TauricResearch/TradingAgents" target="_blank" rel="noopener">TradingAgents</a></strong>
+              if you want the academically-grounded Bull/Bear debate framework, the broadest LLM-provider
+              matrix (Qwen, GLM, MiniMax, Azure, and more), checkpoint-resume reliability for long
+              runs, or to build on a paper-backed research codebase.
+            </li>
+            <li>
+              <strong>Quorai</strong> if you want point-in-time SEC fundamentals with no look-ahead
+              bias, agents weighted by realised forward-return accuracy, a real (paper) broker
+              connection with a human approval gate, or to run ablation studies on regime selection,
+              conviction weights, and analyst subsets.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
     <Pipeline />
     <Roster />
 
-    <!-- §04 Method -->
+    <!-- §05 Method -->
     <section id="math">
       <div class="section-inner">
         <div class="section-head">
-          <div class="section-num"><span>§ 04</span> &nbsp;Method</div>
+          <div class="section-num"><span>§ 05</span> &nbsp;Method</div>
           <h2>Under the debate, a quantitative core.</h2>
           <p class="lede">
             The schools argue in natural language, but each analyst calls into a small Python
@@ -267,11 +442,11 @@ import '@fontsource/ibm-plex-mono/600.css';
       </div>
     </section>
 
-    <!-- §05 Safety -->
+    <!-- §06 Safety -->
     <section id="safety">
       <div class="section-inner">
         <div class="section-head">
-          <div class="section-num"><span>§ 05</span> &nbsp;Safety</div>
+          <div class="section-num"><span>§ 06</span> &nbsp;Safety</div>
           <h2>Hard stops first, soft limits on top.</h2>
           <p class="lede">
             The Alpaca client refuses to construct a live-trading client unless
