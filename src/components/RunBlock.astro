@@ -3,7 +3,7 @@
 <section id="run">
   <div class="section-inner">
     <div class="section-head">
-      <div class="section-num"><span>§ 07</span> &nbsp;Use</div>
+      <div class="section-num"><span>§ 08</span> &nbsp;Use</div>
       <h2>Run it yourself.</h2>
       <p class="lede">
         Clone the repo, install with <code>uv sync</code>, and invoke one of the entry points
@@ -41,6 +41,18 @@
           <div class="run-label">claude code (mcp)</div>
           <pre class="run-cmd">claude mcp add quorai uvx quorai-mcp</pre>
         </div>
+        <div class="run">
+          <div class="run-label">cost model</div>
+          <pre class="run-cmd">uv run backtester <span class="flag">--tickers</span> <span class="arg">AAPL,MSFT</span> <span class="flag">--model</span> <span class="arg">deepseek/deepseek-chat</span> <span class="flag">--model-provider</span> <span class="arg">OpenRouter</span> <span class="flag">--slippage-bps</span> <span class="arg">5</span> <span class="flag">--commission-bps</span> <span class="arg">1</span> <span class="flag">--borrow-bps-annual</span> <span class="arg">50</span></pre>
+        </div>
+        <div class="run">
+          <div class="run-label">calibrate math twins</div>
+          <pre class="run-cmd">uv run backtester calibrate-math <span class="flag">--signal-log</span> <span class="arg">logs/backtest/signals/signals-&lt;run-id&gt;.jsonl</span> <span class="cmt"># grid-searches per-agent bull_cut / bear_cut</span></pre>
+        </div>
+        <div class="run">
+          <div class="run-label">llm ablation</div>
+          <pre class="run-cmd">uv run backtester llm-ablation <span class="flag">--tickers</span> <span class="arg">AAPL,MSFT</span> <span class="flag">--start-date</span> <span class="arg">2026-01-01</span> <span class="flag">--end-date</span> <span class="arg">2026-03-31</span> <span class="cmt"># reruns with all-math / PM-rule / no-debate-context modes</span></pre>
+        </div>
       </div>
 
       <p class="run-note">
@@ -52,10 +64,18 @@
         construction (the Alpaca client refuses to connect to a live endpoint). For
         historically accurate backtests, seed the SEC EDGAR fundamentals cache first:
         <code>uv run python experiments/seed_sec_fundamentals.py --tickers AAPL,MSFT</code>.
+        Every backtest automatically runs a 3-step analytics suite after the run completes
+        (school-debate impact → forward-return labeling → LLM-vs-math); pass
+        <code>--no-analyze</code> to opt out. The <code>calibrate-math</code> and
+        <code>llm-ablation</code> steps are heavier — they're printed as copy-pasteable
+        commands at the end of each run rather than run automatically.
         See the
         <a href="https://github.com/quorai/quorai" target="_blank" rel="noopener">README</a>
         for the full setup walkthrough.
-        For a browsable view of the cycle bundles written to <code>logs/</code>, see the read-only companion UI at <a href="https://github.com/quorai/quorai-ui" target="_blank" rel="noopener">quorai/quorai-ui</a>.
+        For a browsable view of the cycle bundles written to <code>logs/</code>, see the
+        read-only companion UI at
+        <a href="https://github.com/quorai/quorai-ui" target="_blank" rel="noopener">quorai/quorai-ui</a>
+        (§ 09 below).
         To expose the panel as a tool call to any MCP host (Claude Code, Claude Desktop, Cursor, Cline, …), run <code>claude mcp add quorai uvx quorai-mcp</code> — see the <a href="https://github.com/quorai/quorai#mcp-server" target="_blank" rel="noopener">MCP server section</a> of the README.
       </p>
 

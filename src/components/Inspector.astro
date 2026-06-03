@@ -1,0 +1,114 @@
+---
+---
+<section id="inspector">
+  <div class="section-inner">
+    <div class="section-head">
+      <div class="section-num"><span>§ 09</span> &nbsp;Inspector</div>
+      <h2>Browse the run — don't grep the logs.</h2>
+      <p class="lede">
+        <a href="https://github.com/quorai/quorai-ui" target="_blank" rel="noopener">quorai-ui</a>
+        is a read-only companion web app (Next.js, runs on port 3030) that reads the cycle bundles
+        <code>quorai-app</code> writes to <code>logs/&lt;mode&gt;/runs/</code> and presents them
+        as browsable, comparable views. It never touches the trading system — point it at the
+        <code>logs/</code> directory and go.
+      </p>
+    </div>
+    <div class="section-body prose">
+
+      <figure class="shots-lead">
+        <img
+          src="/assets/ui/quorai-ui-demo.gif"
+          width="956"
+          height="640"
+          loading="lazy"
+          alt="quorai-ui demo — runs list, run overview, cycle breakdown"
+        />
+        <figcaption>demo — runs list → run overview → cycle breakdown</figcaption>
+      </figure>
+
+      <p>Six main views:</p>
+      <ul>
+        <li>
+          <strong>Runs list</strong> — searchable, sortable index of all backtest and live runs
+          with at-a-glance return, Sharpe, risk profile, and timestamps.
+        </li>
+        <li>
+          <strong>Run overview</strong> — headline metrics (cycles, tokens, duration, model,
+          status), risk profile, backtest results (return, Sharpe, Sortino, drawdown, baselines),
+          equity-curve chart, and a per-cycle breakdown table.
+        </li>
+        <li>
+          <strong>Agents</strong> — the 25 persona analysts grouped by investing school, with a
+          tickers × days decision matrix and per-cell reasoning popovers.
+        </li>
+        <li>
+          <strong>Schools</strong> — six investing schools with per-school signal heatmaps and a
+          cross-school debate log for each cycle.
+        </li>
+        <li>
+          <strong>Cycle detail</strong> — full breakdown of a single trading cycle: regime
+          indicators, portfolio before/after, analyst-signal heatmap, group consensus and debate,
+          risk limits, portfolio-manager decisions, executed trades, and token-usage chart.
+        </li>
+        <li>
+          <strong>LLM-vs-Math analysis tabs</strong> — three optional tabs that mirror the
+          measurement harness (§ 06): per-agent dual-attribution (Δhit-rate, Δspread, Δalpha),
+          school-debate impact (tilt delta, stance flip rates, contested-set Jaccard), and a
+          P&amp;L ablation across modes. Each tab only renders when its backing report JSON
+          exists for the run.
+        </li>
+      </ul>
+
+      <p>
+        The app also ships a <strong>command palette</strong> (keyboard-driven navigation across
+        runs) and uses the same paper / lab-notebook design language as the main repo. Setup
+        requires only a single env var (<code>QUORAI_LOGS_DIR</code>) pointing at
+        <code>quorai-app</code>'s <code>logs/</code> directory.
+      </p>
+
+      <div class="shots">
+        <figure>
+          <img
+            src="/assets/ui/quorai-ui-home-run-01.png"
+            width="956"
+            height="1110"
+            loading="lazy"
+            alt="quorai-ui run overview with equity curve"
+          />
+          <figcaption>run overview — equity curve + per-cycle breakdown</figcaption>
+        </figure>
+        <figure>
+          <img
+            src="/assets/ui/quorai-ui-llm-vs-math.png"
+            width="955"
+            height="1242"
+            loading="lazy"
+            alt="quorai-ui LLM-vs-Math analysis tab"
+          />
+          <figcaption>LLM-vs-math — per-agent Δhit-rate, Δspread, Δalpha</figcaption>
+        </figure>
+        <figure>
+          <img
+            src="/assets/ui/quorai-ui-schools-detail-01.png"
+            width="956"
+            height="1158"
+            loading="lazy"
+            alt="quorai-ui Schools view — signal heatmap and debate log"
+          />
+          <figcaption>schools — signal heatmap + cross-school debate log</figcaption>
+        </figure>
+        <figure>
+          <img
+            src="/assets/ui/quorai-ui-cycle-01.png"
+            width="956"
+            height="1322"
+            loading="lazy"
+            alt="quorai-ui cycle detail view"
+          />
+          <figcaption>cycle detail — regime, analyst signals, PM decisions, trades</figcaption>
+        </figure>
+      </div>
+
+    </div>
+  </div>
+</section>

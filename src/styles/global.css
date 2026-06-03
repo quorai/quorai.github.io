@@ -815,6 +815,57 @@ section {
   line-height: 1.5;
 }
 
+/* ── Screenshot gallery (Inspector section) ─────────────── */
+.shots {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 28px;
+}
+.shots figure {
+  margin: 0;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.shots figure img,
+.shots figure .shot-gif {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+.shots figcaption {
+  padding: 8px 12px 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  border-top: 1px solid var(--rule);
+}
+.shots-lead {
+  margin-top: 28px;
+  margin-bottom: 16px;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.shots-lead img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.shots-lead figcaption {
+  padding: 8px 12px 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  border-top: 1px solid var(--rule);
+}
+
 /* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 820px) {
   .section-head { grid-template-columns: 1fr; gap: 6px; }
@@ -854,4 +905,5 @@ section {
   .topbar nav a:last-child { border-bottom: none; }
   .topbar nav .gh { border: none; background: none; padding: 10px 4px; border-radius: 0; font-size: 14px; }
   .run { grid-template-columns: 1fr; gap: 6px; }
+  .shots { grid-template-columns: 1fr; }
 }

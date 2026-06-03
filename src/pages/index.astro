@@ -4,6 +4,7 @@ import Hero from '../components/Hero.astro';
 import Pipeline from '../components/Pipeline.astro';
 import Roster from '../components/Roster.astro';
 import RunBlock from '../components/RunBlock.astro';
+import Inspector from '../components/Inspector.astro';
 import Footer from '../components/Footer.astro';
 import '../styles/global.css';
 import '@fontsource/ibm-plex-serif/400.css';
@@ -269,7 +270,19 @@ import '@fontsource/ibm-plex-mono/600.css';
                   <td><strong>LLM provider coverage</strong></td>
                   <td>OpenAI, Anthropic, Groq, DeepSeek, Ollama</td>
                   <td>OpenAI, Google, Anthropic, xAI, DeepSeek, Qwen, GLM, MiniMax, OpenRouter, Ollama, Azure</td>
-                  <td>OpenAI, Anthropic + per-agent overrides</td>
+                  <td>14 providers: OpenAI, Anthropic, Groq, Gemini, DeepSeek, xAI, OpenRouter, Ollama (local / free), Alibaba, Azure, GigaChat, Meta, Mistral, Kimi + per-agent overrides</td>
+                </tr>
+                <tr>
+                  <td><strong>LLM-vs-math measurement</strong></td>
+                  <td>—</td>
+                  <td>—</td>
+                  <td>✅ Deterministic math twin per agent; agreement rate, override accuracy, ΔIC / Δhit-rate / Δalpha "LLM premium"; auto-run after every backtest</td>
+                </tr>
+                <tr>
+                  <td><strong>Realistic cost model</strong></td>
+                  <td>—</td>
+                  <td>—</td>
+                  <td>✅ Optional slippage / commission / short-borrow bps flow through NAV into Sharpe and alpha (<code>--slippage-bps</code>, <code>--commission-bps</code>, <code>--borrow-bps-annual</code>)</td>
                 </tr>
                 <tr>
                   <td><strong>Docker</strong></td>
@@ -319,8 +332,9 @@ import '@fontsource/ibm-plex-mono/600.css';
             <li>
               <strong>Quorai</strong> if you want point-in-time SEC fundamentals with no look-ahead
               bias, agents weighted by realised forward-return accuracy, a real (paper) broker
-              connection with a human approval gate, or to run ablation studies on regime selection,
-              conviction weights, and analyst subsets.
+              connection with a human approval gate, to run ablation studies on regime selection,
+              conviction weights, and analyst subsets, or to measure exactly how much alpha the
+              LLM calls add over deterministic quant rules via the math-twin harness.
             </li>
           </ul>
         </div>
@@ -442,11 +456,118 @@ import '@fontsource/ibm-plex-mono/600.css';
       </div>
     </section>
 
-    <!-- §06 Safety -->
+    <!-- §06 Measurement -->
+    <section id="measure">
+      <div class="section-inner">
+        <div class="section-head">
+          <div class="section-num"><span>§ 06</span> &nbsp;Measurement</div>
+          <h2>Does the LLM actually beat the math?</h2>
+          <p class="lede">
+            Every instrumented persona analyst computes a deterministic "math twin" signal from
+            its underlying quantitative inputs <em>before</em> making an LLM call. The score
+            maps to a direction via per-agent calibrated thresholds (defaults:
+            <code>bull_cut = 0.60</code>, <code>bear_cut = 0.40</code>) and is written to the
+            signal log alongside the LLM <code>signal</code> and <code>confidence</code> — so
+            both can be compared per agent, per ticker, and across the full run.
+          </p>
+        </div>
+        <div class="section-body prose">
+
+          <h3>LLM-premium metrics</h3>
+          <p>
+            The <code>backtester llm-vs-math</code> subcommand computes the following per agent
+            from a labelled signal log:
+          </p>
+          <div style="overflow-x: auto;">
+            <table>
+              <thead>
+                <tr><th>Metric</th><th>Definition</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Agreement rate</strong></td>
+                  <td><code>agree / total_directional</code> — fraction of (bullish/bearish) records where <code>signal == math_signal</code></td>
+                </tr>
+                <tr>
+                  <td><strong>Override count</strong></td>
+                  <td>Records where the LLM direction differs from the math twin</td>
+                </tr>
+                <tr>
+                  <td><strong>LLM override accuracy</strong></td>
+                  <td><code>llm_correct / override_count</code> — among overrides, fraction where the LLM direction matched the forward-return sign</td>
+                </tr>
+                <tr>
+                  <td><strong>Math win rate on overrides</strong></td>
+                  <td>Fraction of overrides where math was right and LLM was wrong</td>
+                </tr>
+                <tr>
+                  <td><strong>Δhit-rate</strong></td>
+                  <td><code>llm_hit_rate − math_hit_rate</code> per agent — LLM premium on directional accuracy</td>
+                </tr>
+                <tr>
+                  <td><strong>Δspread (IC)</strong></td>
+                  <td><code>llm_directional_spread − math_directional_spread</code> — LLM premium on signal information coefficient</td>
+                </tr>
+                <tr>
+                  <td><strong>Δalpha</strong></td>
+                  <td><code>llm_alpha_vs_baseline − math_alpha_vs_baseline</code> per agent</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            The <code>backtester debate-impact</code> subcommand replays group aggregation on
+            both LLM and math-twin signal sets per stored cycle bundle and reports the
+            mean |tilt delta| (LLM vs math panel stance), contested-set Jaccard overlap, and
+            per-school group-stance flip rate. Together these answer: how much does the debate
+            change what the math alone would have decided?
+          </p>
+
+          <h3>Automatic post-backtest analytics</h3>
+          <p>
+            Every <code>backtester</code> run automatically executes a 3-step analytics suite
+            after the backtest completes:
+          </p>
+          <ol>
+            <li><strong>[1/3] School-debate impact</strong> — group-stance flip rates and panel-tilt delta vs the math-twin baseline.</li>
+            <li><strong>[2/3] Forward-return labeling + conviction weights</strong> — signals are labelled with 1 d / 5 d / 20 d returns; conviction weights are recomputed and written to <code>feedback/weights.json</code>.</li>
+            <li><strong>[3/3] LLM-vs-math per-agent analysis</strong> — the full premium table above. Step 3 is automatically skipped when the run window is younger than the forward-return horizon (5 trading days); re-run <code>backtester feedback</code> once the horizon has elapsed.</li>
+          </ol>
+          <p>
+            Each step is guarded — an analytics failure prints a warning but never crashes the
+            run. Pass <code>--no-analyze</code> to skip the suite entirely. The two heavier
+            remaining steps (<code>calibrate-math</code> and <code>llm-ablation</code>) are
+            printed as copy-pasteable commands at the end of each run rather than run
+            automatically.
+          </p>
+
+          <h3>Ablation harness</h3>
+          <p>
+            <code>backtester llm-ablation</code> reruns the backtest under several modes and
+            reports P&amp;L, Sharpe, drawdown, and token cost for each:
+          </p>
+          <ul>
+            <li><strong>all-LLM</strong> — baseline: every agent uses its LLM call (default behaviour).</li>
+            <li><strong>all-math</strong> — every agent uses its deterministic math-twin signal only; no LLM calls.</li>
+            <li><code>QUORAI_PM_MODE=rule</code> — portfolio manager replaced by a deterministic tilt-following rule; no PM LLM call.</li>
+            <li><code>QUORAI_PM_DEBATE_CONTEXT=0</code> — PM prompt omits the debate-moderator summary.</li>
+            <li><strong>leave-one-out</strong> (<code>--full-loo</code>) — each persona is individually replaced by its math twin to quantify its marginal contribution.</li>
+          </ul>
+          <p>
+            Math-twin thresholds can be calibrated from any labelled signal log:
+            <code>backtester calibrate-math</code> grid-searches per-agent
+            <code>bull_cut</code> / <code>bear_cut</code> values to maximise directional spread
+            and writes results to <code>feedback/math_thresholds.json</code>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- §07 Safety -->
     <section id="safety">
       <div class="section-inner">
         <div class="section-head">
-          <div class="section-num"><span>§ 06</span> &nbsp;Safety</div>
+          <div class="section-num"><span>§ 07</span> &nbsp;Safety</div>
           <h2>Hard stops first, soft limits on top.</h2>
           <p class="lede">
             The Alpaca client refuses to construct a live-trading client unless
@@ -534,6 +655,7 @@ import '@fontsource/ibm-plex-mono/600.css';
     </section>
 
     <RunBlock />
+    <Inspector />
     <Footer />
   </body>
 </html>
